@@ -1,10 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe Capistrano::CrowdFavorite::WordPress, "loaded into capistrano" do
+describe CrowdFavorite::WordPress, "loaded into capistrano" do
   before do
     @configuration = Capistrano::Configuration.new
     @configuration.extend(Capistrano::Spec::ConfigurationExtension)
-    @configuration.extend(Capistrano::CrowdFavorite::WordPress)
+    @configuration.extend(CrowdFavorite::WordPress)
   end
 
   it "defines cf:wordpress:install" do

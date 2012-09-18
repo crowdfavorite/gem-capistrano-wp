@@ -1,2 +1,2 @@
 require 'rubygems'
-require 'capistrano/crowdfavorite/wordpress'
+require 'crowdfavorite/wordpress'
