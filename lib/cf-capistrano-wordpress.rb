@@ -1,2 +1,3 @@
 require 'rubygems'
-require 'crowdfavorite/wordpress'
+
+require 'crowdfavorite'
