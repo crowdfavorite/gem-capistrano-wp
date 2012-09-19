@@ -6,7 +6,6 @@ describe CrowdFavorite::WordPress, "loaded into capistrano" do
     @configuration = Capistrano::Configuration.new
     @configuration.extend(Capistrano::Spec::ConfigurationExtension)
     CrowdFavorite::WordPress.load_into(@configuration)
-    #@configuration.extend(CrowdFavorite::WordPress)
   end
 
   it "defines cf:wordpress:install" do
