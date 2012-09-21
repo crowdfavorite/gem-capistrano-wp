@@ -1,6 +1,6 @@
-require 'crowdfavorite'
+require 'crowdfavorite/tasks'
 
-module CrowdFavorite::LocalChanges
+module CrowdFavorite::Tasks::LocalChanges
   extend CrowdFavorite::Support::Namespace
 
   namespace :cf do

@@ -1,7 +1,7 @@
-require 'crowdfavorite'
+require 'crowdfavorite/tasks'
 require 'Shellwords'
 
-module CrowdFavorite::WordPress
+module CrowdFavorite::Tasks::WordPress
   extend CrowdFavorite::Support::Namespace
   namespace :cf do
     def _cset(name, *args, &block)

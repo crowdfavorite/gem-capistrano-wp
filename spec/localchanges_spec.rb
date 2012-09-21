@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 require 'crowdfavorite/tasks/localchanges'
 
-describe CrowdFavorite::LocalChanges, "loaded into capistrano" do
+describe CrowdFavorite::Tasks::LocalChanges, "loaded into capistrano" do
   before do
     @configuration = Capistrano::Configuration.new
     @configuration.extend(Capistrano::Spec::ConfigurationExtension)
-    CrowdFavorite::LocalChanges.load_into(@configuration)
+    CrowdFavorite::Tasks::LocalChanges.load_into(@configuration)
   end
 
   it "defines cf:localchanges:snapshot" do
