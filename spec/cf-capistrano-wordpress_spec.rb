@@ -1,5 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'crowdfavorite/wordpress'
+require 'crowdfavorite/tasks/wordpress'
 
 describe CrowdFavorite::WordPress, "loaded into capistrano" do
   before do

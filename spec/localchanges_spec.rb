@@ -1,5 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'crowdfavorite/localchanges'
+require 'crowdfavorite/tasks/localchanges'
 
 describe CrowdFavorite::LocalChanges, "loaded into capistrano" do
   before do
