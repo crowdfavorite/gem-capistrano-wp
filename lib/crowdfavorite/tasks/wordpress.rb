@@ -30,11 +30,8 @@ module CrowdFavorite::Tasks::WordPress
       "*.html" => "/",
     }]
 
-    # handle an issue with cleanup using the :copy deploy strategy (directory mtime
-    # doesn't change)
-    before  "deploy:cleanup", "cf:wordpress:touch_release"
-
     before   "deploy:finalize_update", "cf:wordpress:generate_config"
+    after    "deploy:finalize_update", "cf:wordpress:touch_release"
     after    "cf:wordpress:generate_config", "cf:wordpress:link_symlinks"
     after    "cf:wordpress:link_symlinks", "cf:wordpress:copy_configs"
     after    "cf:wordpress:copy_configs", "cf:wordpress:install"

@@ -19,6 +19,21 @@ module CrowdFavorite::Tasks::LocalChanges
       creation
     }
 
+    _cset(:hash_directory) { shared_path }
+    _cset(:hash_suffix) { "_hash" }
+    _cset(:hash_compare_suffix) { "compare" }
+    _cset(:hashes) { capture("ls -xt #{File.join(hash_directory, '*' + hash_suffix)}").split.reverse }
+
+
+    def _snapshot_exists(path)
+        retcode = (capture("test -f " + Shellwords::escape(path) + "; echo $?").to_s.strip.to_i)
+        return retcode == 0 ? true : false
+    end
+
+    def _hash_path(release, extra = "")
+      File.join(hash_directory, release + hash_suffix + extra)
+    end
+
     namespace :localchanges do
       task :snapshot_deploy, :except => { :no_release => true } do
         set(:snapshot_target, latest_release)
@@ -26,24 +41,26 @@ module CrowdFavorite::Tasks::LocalChanges
         unset(:snapshot_target)
       end
 
+      desc "Snapshot the current release for later change detection."
       task :snapshot, :except => { :no_release => true } do
         target_release = File.basename(fetch(:snapshot_target, comparison_target))
 
         target_path = File.join(releases_path, target_release)
-        default_hash_path = File.join(shared_path, target_release + "_hash")
+        default_hash_path = _hash_path(target_release) # File.join(shared_path, target_release + "_hash")
         hash_path = fetch(:snapshot_hash_path, default_hash_path)
 
-        snapshot_exists = !(capture("test -f " + Shellwords::escape(hash_path) + "; echo $?").to_s.strip)
+        snapshot_exists = _snapshot_exists(hash_path)
         
-        if snapshot_exists and fetch(:snapshot_force, false)
-          puts "A snapshot for release #{target_release} already exists."
-          return
+        if snapshot_exists and !fetch(:snapshot_force, false)
+          logger.info "A snapshot for release #{target_release} already exists."
+          next
         end
 
         run("find " + Shellwords::escape(target_path) + " -type f -print0 | xargs -0 #{hash_creation} > " + Shellwords::escape(hash_path))
 
       end
 
+      desc "Call this before a deploy to continue despite local changes made on the server."
       task :allow_differences do
         set(:snapshot_allow_differences, true)
       end
@@ -52,11 +69,17 @@ module CrowdFavorite::Tasks::LocalChanges
         set(:snapshot_allow_differences, false)
       end
 
+      desc "Check the current release for changes made on the server."
       task :compare, :except => { :no_release => true } do
-        release_name = File.basename(latest_release)
-        set(:snapshot_target, latest_release)
-        default_hash_path = File.join(shared_path, release_name + "_hash")
-        set(:snapshot_hash_path, File.join(shared_path, release_name + "_hash_compare"))
+        release_name = File.basename(current_release)
+        set(:snapshot_target, current_release)
+        default_hash_path = _hash_path(release_name) # File.join(shared_path, release_name + "_hash")
+        snapshot_exists = _snapshot_exists(default_hash_path)
+        if !snapshot_exists
+          logger.info "no previous snapshot to compare against"
+          next
+        end
+        set(:snapshot_hash_path, _hash_path(release_name, hash_compare_suffix)) # File.join(shared_path, release_name + "_hash_compare"))
         set(:snapshot_force, true)
         snapshot
 
@@ -102,11 +125,12 @@ module CrowdFavorite::Tasks::LocalChanges
             end
           end
 
-          puts "deleted: " + left.inspect
-          puts "created: " + right.inspect
-          puts "changed: " + changed.inspect
+          logger.important "deleted: " + left.inspect
+          logger.important "created: " + right.inspect
+          logger.important "changed: " + changed.inspect
 
-          abort("Aborting: changes detected") unless fetch(:snapshot_allow_differences, false)
+          abort("Aborting: local changes detected in current release") unless fetch(:snapshot_allow_differences, false)
+          logger.important "Continuing deploy despite differences!"
         end
 
         unset(:snapshot_target)
@@ -114,6 +138,18 @@ module CrowdFavorite::Tasks::LocalChanges
         unset(:snapshot_force)
       end
 
+      task :cleanup, :except => { :no_release => true } do
+        count = fetch(:keep_releases, 5).to_i
+        if count >= hashes.length
+          logger.info "no old hashes to clean up"
+        else
+          logger.info "keeping #{count} of #{hashes.length} release hashes"
+          hashpaths = (hashes - hashes.last(count)).map{ |thehash|
+            File.join(hash_directory, thehash) + " " + File.join(hash_directory, thehash + hash_compare_suffix)
+          }.join(" ")
+          try_sudo "rm -f #{hashpaths}"
+        end
+      end
     end
   end
 end
