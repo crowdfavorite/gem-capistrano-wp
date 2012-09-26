@@ -12,7 +12,7 @@ module CrowdFavorite::Tasks::LocalChanges
 
     _cset(:comparison_target) { current_release }
     _cset(:hash_creation) { 
-      creation = capture('(which shasum || which openssl || which sha1sum || echo "ls -ld")').to_s.strip
+      creation = capture('((which shasum >/dev/null 2>&1 && which shasum) || (which sha1sum >/dev/null 2>&1 && which sha1sum) || (which openssl >/dev/null 2>&1 && which openssl) || echo "ls -ld")').to_s.strip
       if creation.match(/openssl$/)
         "#{creation} sha1 -r"
       end
