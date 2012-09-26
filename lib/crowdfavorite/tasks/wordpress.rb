@@ -3,6 +3,17 @@ require 'Shellwords'
 
 module CrowdFavorite::Tasks::WordPress
   extend CrowdFavorite::Support::Namespace
+  def _combine_filehash base, update
+    if update.respond_to? :has_key?
+      update = [update]
+    end
+    new = {}
+    new.merge!(base)
+    update.each do |update_hash|
+      new.merge!(update_hash)
+    end
+    new
+  end
   namespace :cf do
     def _cset(name, *args, &block)
       unless exists?(name)
@@ -30,11 +41,19 @@ module CrowdFavorite::Tasks::WordPress
       "*.html" => "/",
     }]
 
+    _cset :base_stage_specific_overrides, {
+      "local-config.php" => "local-config.php",
+      ".htaccess" => ".htaccess"
+    }
+
+    _cset :stage_specific_overrides, {}
+
     before   "deploy:finalize_update", "cf:wordpress:generate_config"
     after    "deploy:finalize_update", "cf:wordpress:touch_release"
     after    "cf:wordpress:generate_config", "cf:wordpress:link_symlinks"
     after    "cf:wordpress:link_symlinks", "cf:wordpress:copy_configs"
     after    "cf:wordpress:copy_configs", "cf:wordpress:install"
+    after    "cf:wordpress:install", "cf:wordpress:do_stage_specific_overrides"
     namespace :wordpress do
 
       namespace :install do
@@ -154,6 +173,21 @@ module CrowdFavorite::Tasks::WordPress
             targ = File.join(release_path, targ) unless targ.include?(release_path)
             run "ls -d #{src} >/dev/null 2>&1 && cp -urp #{src} #{targ} || true"
             #run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["cp", "-rp", src, targ]) + " || true"
+          end
+        end
+      end
+
+      desc <<-DESC
+              [internal] Pushes up local-config.php, .htaccess, others if they exist for that stage
+      DESC
+      task :do_stage_specific_overrides, :except => { :no_release => true } do
+        next unless fetch(:stage, false)
+        overrides = _combine_filehash(fetch(:base_stage_specific_overrides), fetch(:stage_specific_overrides))
+        overrides.each do |src, targ|
+          src = File.join("config", "#{stage}-#{src}")
+          targ = File.join(release_path, targ) unless targ.include?(release_path)
+          if File.exist?(src)
+            upload(src, targ)
           end
         end
       end
