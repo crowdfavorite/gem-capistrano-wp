@@ -12,6 +12,9 @@ module CrowdFavorite::Tasks::LocalChanges
 
     _cset(:comparison_target) { current_release }
     _cset(:hash_creation) { 
+      # Find out what hashing mechanism we can use - shasum, sha1sum, openssl, or just an ls command.
+      # Unfortunate double-call of which handles some systems which output an error message on stdout
+      # when the program cannot be found.
       creation = capture('((which shasum >/dev/null 2>&1 && which shasum) || (which sha1sum >/dev/null 2>&1 && which sha1sum) || (which openssl >/dev/null 2>&1 && which openssl) || echo "ls -ld")').to_s.strip
       if creation.match(/openssl$/)
         "#{creation} sha1 -r"
