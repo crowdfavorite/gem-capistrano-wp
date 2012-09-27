@@ -28,19 +28,38 @@ module CrowdFavorite::Tasks::WordPress
       "capinfo.json",
     ]
 
-    _cset :wp_symlinks, [{
+    # wp_symlinks are symlinked from the shared directory into the release.
+    # Key is the shared file; value is the target location.
+    # :wp_symlinks overwrites :base_wp_symlinks; an empty target location
+    # means to skip linking the file.
+    _cset :base_wp_symlinks, {
       "cache" => "wp-content/cache",
       "uploads" => "wp-content/uploads",
       "blogs.dir" => "wp-content/blogs.dir",
-    }] 
+    }
 
-    _cset :wp_configs, [{
+    _cset :wp_symlinks, {}
+
+    # wp_configs are copied from the shared directory into the release.
+    # Key is the shared file; value is the target location.
+    # :wp_configs overwrites :base_wp_configs; an empty target location
+    # means to skip copying the file.
+    _cset :base_wp_configs, {
       "db-config.php" => "wp-content/",
       "advanced-cache.php" => "wp-content/",
       "object-cache.php" => "wp-content/",
       "*.html" => "/",
-    }]
+    }
 
+    _cset :wp_configs, {}
+
+    # stage_specific_overrides are uploaded from the repo's config 
+    # directory, if they exist for that stage.  Files are named
+    # 'STAGE-filename.txt' locally and copied to 'filename.txt'
+    # on deploy for that stage.
+    # Key is the local file; value is the target location.
+    # :stage_specific_overrides overwrites :base_stage_specific_overrides; 
+    # an empty target location means to skip uploading the file.
     _cset :base_stage_specific_overrides, {
       "local-config.php" => "local-config.php",
       ".htaccess" => ".htaccess"
@@ -154,12 +173,12 @@ module CrowdFavorite::Tasks::WordPress
               [internal] Symlinks specified files (usually uploads/blogs.dir/cache directories)
       DESC
       task :link_symlinks, :except => { :no_release => true } do
-        fetch(:wp_symlinks, []).each do |symlink_group|
-          symlink_group.each do |src, targ|
-            src = File.join(shared_path, src) unless src.include?(shared_path)
-            targ = File.join(release_path, targ) unless targ.include?(release_path)
-            run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["ln", "-nsf", src, targ]) + " || true"
-          end
+        symlinks = _combine_filehash(fetch(:base_wp_symlinks), fetch(:wp_symlinks))
+        symlinks.each do |src, targ|
+          next if targ.nil? || targ == false || targ.empty?
+          src = File.join(shared_path, src) unless src.include?(shared_path)
+          targ = File.join(release_path, targ) unless targ.include?(release_path)
+          run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["ln", "-nsf", src, targ]) + " || true"
         end
       end
 
@@ -167,13 +186,13 @@ module CrowdFavorite::Tasks::WordPress
               [internal] Copies specified files (usually advanced-cache, object-cache, db-config)
       DESC
       task :copy_configs, :except => { :no_release => true } do
-        fetch(:wp_configs, []).each do |config_group|
-          config_group.each do |src, targ|
-            src = File.join(shared_path, src) unless src.include?(shared_path)
-            targ = File.join(release_path, targ) unless targ.include?(release_path)
-            run "ls -d #{src} >/dev/null 2>&1 && cp -urp #{src} #{targ} || true"
-            #run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["cp", "-rp", src, targ]) + " || true"
-          end
+        configs = _combine_filehash(fetch(:base_wp_configs), fetch(:wp_configs))
+        configs.each do |src, targ|
+          next if targ.nil? || targ == false || targ.empty?
+          src = File.join(shared_path, src) unless src.include?(shared_path)
+          targ = File.join(release_path, targ) unless targ.include?(release_path)
+          run "ls -d #{src} >/dev/null 2>&1 && cp -urp #{src} #{targ} || true"
+          #run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["cp", "-rp", src, targ]) + " || true"
         end
       end
 
@@ -184,6 +203,7 @@ module CrowdFavorite::Tasks::WordPress
         next unless fetch(:stage, false)
         overrides = _combine_filehash(fetch(:base_stage_specific_overrides), fetch(:stage_specific_overrides))
         overrides.each do |src, targ|
+          next if targ.nil? || targ == false || targ.empty?
           src = File.join("config", "#{stage}-#{src}")
           targ = File.join(release_path, targ) unless targ.include?(release_path)
           if File.exist?(src)
