@@ -72,8 +72,7 @@ module CrowdFavorite::Tasks::LocalChanges
         set(:snapshot_allow_differences, false)
       end
 
-      desc "Check the current release for changes made on the server."
-      task :compare, :except => { :no_release => true } do
+      def _do_snapshot_compare()
         release_name = File.basename(current_release)
         set(:snapshot_target, current_release)
         default_hash_path = _hash_path(release_name) # File.join(shared_path, release_name + "_hash")
@@ -127,18 +126,50 @@ module CrowdFavorite::Tasks::LocalChanges
               right.delete(filename) if right[filename].empty?
             end
           end
-
-          logger.important "deleted: " + left.inspect
-          logger.important "created: " + right.inspect
-          logger.important "changed: " + changed.inspect
-
-          abort("Aborting: local changes detected in current release") unless fetch(:snapshot_allow_differences, false)
-          logger.important "Continuing deploy despite differences!"
         end
 
         unset(:snapshot_target)
         unset(:snapshot_hash_path)
         unset(:snapshot_force)
+        return {:left => left, :right => right, :changed => changed}
+      end
+
+      def _do_snapshot_diff(results, format = :full)
+        if results[:left].empty? && results[:right].empty? && results[:changed].empty?
+          return false
+        end
+
+        if format == :basic || !(fetch(:strategy).class <= Capistrano::Deploy::Strategy.new(:remote).class)
+          logger.important "deleted: " + results[:left].inspect
+          logger.important "created: " + results[:right].inspect
+          logger.important "changed: " + results[:changed].inspect
+          return true
+        end
+
+        ## TODO: improve diff handling for remote_cache with .git copy_excluded
+        ## TODO: improve diff handling for remote_cache with .git not copy_excluded
+        ## TODO: improve diff handling for remote_cache with .svn copy_excluded
+        ## TODO: improve diff handling for remote_cache with .svn not copy_excluded
+        logger.important "deleted: " + results[:left].inspect
+        logger.important "created: " + results[:right].inspect
+        logger.important "changed: " + results[:changed].inspect
+        return true
+
+      end
+
+      desc "Check the current release for changes made on the server; abort if changes are detected unless snapshot_allow_differences has been set true."
+      task :compare, :except => { :no_release => true } do
+        results = _do_snapshot_compare()
+        if _do_snapshot_diff(results, :basic)
+          abort("Aborting: local changes detected in current release") unless fetch(:snapshot_allow_differences, false)
+          logger.important "Continuing deploy despite differences!"
+        end
+      end
+
+      desc "Check the current release for changes made on the server (and return detailed changes, if using a remote-cached git repo).  Does not abort on changes."
+      task :diff, :except => { :no_release => true } do
+        results = _do_snapshot_compare()
+        _do_snapshot_diff(results, :full)
       end
 
       task :cleanup, :except => { :no_release => true } do
