@@ -10,7 +10,7 @@ module CrowdFavorite::Tasks::LocalChanges
       end
     end
 
-    _cset(:comparison_target) { current_release }
+    _cset(:comparison_target) { current_release rescue File.dirname(release_path) }
     _cset(:hash_creation) { 
       # Find out what hashing mechanism we can use - shasum, sha1sum, openssl, or just an ls command.
       # Unfortunate double-call of which handles some systems which output an error message on stdout
