@@ -73,13 +73,17 @@ module CrowdFavorite::Tasks::LocalChanges
       end
 
       def _do_snapshot_compare()
+        if releases.length == 0
+          logger.info "no current release"
+          return false
+        end
         release_name = File.basename(current_release)
         set(:snapshot_target, current_release)
         default_hash_path = _hash_path(release_name) # File.join(shared_path, release_name + "_hash")
         snapshot_exists = _snapshot_exists(default_hash_path)
         if !snapshot_exists
           logger.info "no previous snapshot to compare against"
-          next
+          return false
         end
         set(:snapshot_hash_path, _hash_path(release_name, hash_compare_suffix)) # File.join(shared_path, release_name + "_hash_compare"))
         set(:snapshot_force, true)
@@ -135,6 +139,9 @@ module CrowdFavorite::Tasks::LocalChanges
       end
 
       def _do_snapshot_diff(results, format = :full)
+        if !results
+          return false
+        end
         if results[:left].empty? && results[:right].empty? && results[:changed].empty?
           return false
         end
@@ -155,9 +162,42 @@ module CrowdFavorite::Tasks::LocalChanges
         logger.important "changed: " + results[:changed].inspect
         return true
 
+        todostuff = <<-'EOTODO'
+        File.join(shared_path, configuration[:repository_cache] || "cached-copy")
+        if fetch(:scm) == :git
+          if fetch(:copy_exclude, []).include?(".git")
+            run("echo 'gitdir: #{}
+
+        end
+
+
+        run("diff " + default_hash_path + " " + snapshot_hash_path + " || true") do |channel, stream, data|
+          data.each_line do |line|
+            line.strip!
+            if line.match(/^\s*[<>]/)
+              parts = line.split(/\s+/)
+              if hash_creation.match(/ls -ld/)
+                # > -rw-rw-r-- 1 example example 41 Sep 19 14:58 index.php
+                parts.slice!(0, 9)
+              else
+                # < 198ed94e9f1e5c69e159e8ba6d4420bb9c039715  index.php
+                parts.slice!(0,2)
+              end
+
+              bucket = line.match(/^\s*</) ? left : right
+              filename = parts.join('')
+
+              bucket[filename] ||= []
+              bucket[filename].push(channel[:host])
+            end
+          end
+        end
+        logger.important "oh hey, fully featured"
+        return true
+        EOTODO
       end
 
-      desc "Check the current release for changes made on the server; abort if changes are detected unless snapshot_allow_differences has been set true."
+      desc "Check the current release for changes made on the server; abort if changes are detected."
       task :compare, :except => { :no_release => true } do
         results = _do_snapshot_compare()
         if _do_snapshot_diff(results, :basic)
