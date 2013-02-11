@@ -59,7 +59,7 @@ module CrowdFavorite::Tasks::LocalChanges
           next
         end
 
-        run("find " + Shellwords::escape(target_path) + " -type f -print0 | xargs -0 #{hash_creation} > " + Shellwords::escape(hash_path))
+        run("find " + Shellwords::escape(target_path) + " -name .git -prune -o -name .svn -prune -o -type f -print0 | xargs -0 #{hash_creation} > " + Shellwords::escape(hash_path))
 
       end
 
