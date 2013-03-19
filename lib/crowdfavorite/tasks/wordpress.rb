@@ -178,7 +178,11 @@ module CrowdFavorite::Tasks::WordPress
           next if targ.nil? || targ == false || targ.empty?
           src = File.join(shared_path, src) unless src.include?(shared_path)
           targ = File.join(release_path, targ) unless targ.include?(release_path)
-          run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["test", "-d", targ]) + " && " + Shellwords::shelljoin(["rm", "-rf", targ]) + " || true"
+          run [
+            Shellwords::shelljoin(["test", "-e", src]),
+            Shellwords::shelljoin(["test", "-d", targ]),
+            Shellwords::shelljoin(["rm", "-rf", targ])
+          ].join(' && ') + " || true"
           run Shellwords::shelljoin(["test", "-e", src]) + " && " + Shellwords::shelljoin(["ln", "-nsf", src, targ]) + " || true"
         end
       end
