@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cf-capistrano-wordpress"
-  s.version = "0.2.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Crowd Favorite"]
-  s.date = "2012-09-21"
+  s.date = "2013-06-03"
   s.description = "    Recipes for deploying and maintaining remote WordPress installations with\n    Capistrano.  Pulls in WordPress from SVN, optionally using a local or \n    remote cache, and supports a number of common operations and tasks towards\n    the care and feeding of sites that may not be 100% maintained through \n    version control.\n"
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -43,42 +43,42 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/crowdfavorite/cf-capistrano-wordpress"
   s.licenses = ["GPL"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.24"
+  s.rubygems_version = "1.8.25"
   s.summary = "Crowd Favorite WordPress Capistrano recipes"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<capistrano>, ["~> 2.13.3"])
+      s.add_runtime_dependency(%q<capistrano>, ["~> 2.15.3"])
       s.add_runtime_dependency(%q<capistrano-ext>, ["~> 1.2.1"])
-      s.add_runtime_dependency(%q<railsless-deploy>, ["~> 1.0.2"])
+      s.add_runtime_dependency(%q<railsless-deploy>, ["~> 1.1.2"])
       s.add_runtime_dependency(%q<erubis>, ["~> 2.7.0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.11"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8"])
-      s.add_development_dependency(%q<rcov>, [">= 0"])
+      s.add_development_dependency(%q<simplecov>, [">= 0"])
       s.add_development_dependency(%q<capistrano-spec>, [">= 0"])
     else
-      s.add_dependency(%q<capistrano>, ["~> 2.13.3"])
+      s.add_dependency(%q<capistrano>, ["~> 2.15.3"])
       s.add_dependency(%q<capistrano-ext>, ["~> 1.2.1"])
-      s.add_dependency(%q<railsless-deploy>, ["~> 1.0.2"])
+      s.add_dependency(%q<railsless-deploy>, ["~> 1.1.2"])
       s.add_dependency(%q<erubis>, ["~> 2.7.0"])
       s.add_dependency(%q<rspec>, ["~> 2.11"])
       s.add_dependency(%q<bundler>, ["~> 1.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.8"])
-      s.add_dependency(%q<rcov>, [">= 0"])
+      s.add_dependency(%q<simplecov>, [">= 0"])
       s.add_dependency(%q<capistrano-spec>, [">= 0"])
     end
   else
-    s.add_dependency(%q<capistrano>, ["~> 2.13.3"])
+    s.add_dependency(%q<capistrano>, ["~> 2.15.3"])
     s.add_dependency(%q<capistrano-ext>, ["~> 1.2.1"])
-    s.add_dependency(%q<railsless-deploy>, ["~> 1.0.2"])
+    s.add_dependency(%q<railsless-deploy>, ["~> 1.1.2"])
     s.add_dependency(%q<erubis>, ["~> 2.7.0"])
     s.add_dependency(%q<rspec>, ["~> 2.11"])
     s.add_dependency(%q<bundler>, ["~> 1.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.8"])
-    s.add_dependency(%q<rcov>, [">= 0"])
+    s.add_dependency(%q<simplecov>, [">= 0"])
     s.add_dependency(%q<capistrano-spec>, [">= 0"])
   end
 end
