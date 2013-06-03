@@ -37,8 +37,8 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
 end
 
 RSpec::Core::RakeTask.new(:rcov) do |spec|
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rcov = true
+  ENV["COVERAGE"] = 'yes'
+  Rake::Task['spec'].execute
 end
 
 task :default => :spec
