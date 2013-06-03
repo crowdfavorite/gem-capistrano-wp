@@ -37,7 +37,7 @@ describe CrowdFavorite::Tasks::WordPress, "loaded into capistrano" do
   end
 
   it "does cf:wordpress:touch_release before deploy:cleanup" do
-    @configuration.should callback('cf:wordpress:touch_release').before('deploy:cleanup')
+    @configuration.should callback('cf:wordpress:touch_release').after('deploy:finalize_update')
   end
 
   it "does cf:wordpress:generate_config before deploy:finalize_update" do
