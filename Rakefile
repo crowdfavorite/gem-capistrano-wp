@@ -14,8 +14,8 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "cf-capistrano-wordpress"
-  gem.homepage = "http://github.com/crowdfavorite/cf-capistrano-wordpress"
+  gem.name = "capistrano-wordpress"
+  gem.homepage = "http://github.com/crowdfavorite/gem-capistrano-wordpress"
   gem.license = "GPL"
   gem.summary = %Q{Crowd Favorite WordPress Capistrano recipes}
   gem.description = <<-EOF
