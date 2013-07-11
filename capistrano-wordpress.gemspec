@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "capistrano-wordpress"
-  s.version = "0.3.1"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Crowd Favorite"]
@@ -24,8 +24,8 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "capistrano-wordpress.gemspec",
+    "lib/capistrano-wordpress.rb",
     "lib/capistrano/crowdfavorite/wordpress.rb",
-    "lib/cf-capistrano-wordpress.rb",
     "lib/crowdfavorite.rb",
     "lib/crowdfavorite/support/capistrano_extensions.rb",
     "lib/crowdfavorite/support/namespace.rb",
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
     "lib/crowdfavorite/version.rb",
     "lib/crowdfavorite/wordpress.rb",
     "spec/.rspec",
-    "spec/cf-capistrano-wordpress_spec.rb",
+    "spec/capistrano-wordpress_spec.rb",
     "spec/localchanges_spec.rb",
     "spec/spec_helper.rb",
     "spec/support/capistrano.rb"
