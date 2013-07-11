@@ -1,4 +1,4 @@
-# capistrano-wordpress
+# capistrano-wp
 
 Recipes for deploying and maintaining remote WordPress installations with
 Capistrano.

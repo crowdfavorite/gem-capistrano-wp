@@ -1,4 +1,4 @@
-capistrano-wordpress - Capistrano recipes for WordPress deploys
+capistrano-wp - Capistrano recipes for WordPress deploys
 
 Copyright (c) 2012 Crowd Favorite, Ltd
 

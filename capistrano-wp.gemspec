@@ -4,8 +4,8 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = "capistrano-wordpress"
-  s.version = "0.4.0"
+  s.name = "capistrano-wp"
+  s.version = "0.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Crowd Favorite"]
@@ -23,8 +23,8 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
-    "capistrano-wordpress.gemspec",
-    "lib/capistrano-wordpress.rb",
+    "capistrano-wp.gemspec",
+    "lib/capistrano-wp.rb",
     "lib/capistrano/crowdfavorite/wordpress.rb",
     "lib/crowdfavorite.rb",
     "lib/crowdfavorite/support/capistrano_extensions.rb",
@@ -35,12 +35,12 @@ Gem::Specification.new do |s|
     "lib/crowdfavorite/version.rb",
     "lib/crowdfavorite/wordpress.rb",
     "spec/.rspec",
-    "spec/capistrano-wordpress_spec.rb",
+    "spec/capistrano-wp_spec.rb",
     "spec/localchanges_spec.rb",
     "spec/spec_helper.rb",
     "spec/support/capistrano.rb"
   ]
-  s.homepage = "http://github.com/crowdfavorite/gem-capistrano-wordpress"
+  s.homepage = "http://github.com/crowdfavorite/gem-capistrano-wp"
   s.licenses = ["GPL"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.25"
