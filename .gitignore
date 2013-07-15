@@ -1,17 +1,17 @@
-# rcov generated
-coverage
-coverage.data
-
-# rdoc generated
-rdoc
-
-# yard generated
-doc
-.yardoc
-
-# bundler
+*.gem
+*.rbc
 .bundle
-
-# jeweler generated
+.config
+coverage
+InstalledFiles
+lib/bundler/man
 pkg
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
 
+# YARD artifacts
+.yardoc
+_yardoc

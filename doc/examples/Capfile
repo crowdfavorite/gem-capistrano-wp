@@ -12,5 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'rubygems'
+require 'railsless-deploy'
 require 'crowdfavorite/wordpress'
-$stderr.puts " * capistrano/crowdfavorite/wordpress is deprecated - please require 'crowdfavorite/wordpress' instead"
+load 'config/deploy' # remove this line to skip loading any of the default tasks
+
