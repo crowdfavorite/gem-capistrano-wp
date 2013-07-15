@@ -48,5 +48,5 @@ When updating the gem requirements:
 
 # Copyright
 
-Copyright (c) 2012 Crowd Favorite, Ltd. See LICENSE.txt for further details.
+Copyright (c) 2012-2013 Crowd Favorite, Ltd. Released under the Apache License, version 2.0. See LICENSE.txt for further details.
 

@@ -1,3 +1,17 @@
+# Copyright 2012-2013 Crowd Favorite, Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 require 'crowdfavorite/tasks'
 require 'Shellwords'
 
@@ -23,7 +37,7 @@ module CrowdFavorite::Tasks::WordPress
 
     _cset :copy_exclude, [
       ".git", ".gitignore", ".gitmodules",
-      ".DS_Store", ".svn", 
+      ".DS_Store", ".svn",
       "Capfile", "/config",
       "capinfo.json",
     ]
@@ -53,12 +67,12 @@ module CrowdFavorite::Tasks::WordPress
 
     _cset :wp_configs, {}
 
-    # stage_specific_overrides are uploaded from the repo's config 
+    # stage_specific_overrides are uploaded from the repo's config
     # directory, if they exist for that stage.  Files are named
     # 'STAGE-filename.txt' locally and copied to 'filename.txt'
     # on deploy for that stage.
     # Key is the local file; value is the target location.
-    # :stage_specific_overrides overwrites :base_stage_specific_overrides; 
+    # :stage_specific_overrides overwrites :base_stage_specific_overrides;
     # an empty target location means to skip uploading the file.
     _cset :base_stage_specific_overrides, {
       "local-config.php" => "local-config.php",
@@ -106,7 +120,7 @@ module CrowdFavorite::Tasks::WordPress
           Dir.mktmpdir do |tmp_dir|
             tmpdir = fetch(:cf_database_store, tmp_dir)
             wp = fetch(:wordpress_version, "trunk")
-            Dir.chdir(tmpdir) do 
+            Dir.chdir(tmpdir) do
               if !(wp.start_with?("tags/") || wp.start_with?("branches/") || wp == "trunk")
                 wp = "branches/#{wp}"
               end
