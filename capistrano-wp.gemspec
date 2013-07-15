@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = "capistrano-wp"
-  s.version = "0.4.1"
+  s.version = "0.4.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Crowd Favorite"]
-  s.date = "2013-07-11"
-  s.description = "    Recipes for deploying and maintaining remote WordPress installations with\n    Capistrano.  Pulls in WordPress from SVN, optionally using a local or \n    remote cache, and supports a number of common operations and tasks towards\n    the care and feeding of sites that may not be 100% maintained through \n    version control.\n"
+  s.date = "2013-07-15"
+  s.description = "Recipes for deploying and maintaining remote WordPress installations with\nCapistrano.  Pulls in WordPress from SVN, optionally using a local or\nremote cache, and supports a number of common operations and tasks towards\nthe care and feeding of sites that may not be 100% maintained through\nversion control.\n"
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -24,6 +24,11 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "capistrano-wp.gemspec",
+    "doc/examples/Capfile",
+    "doc/examples/config/deploy.rb",
+    "doc/examples/config/deploy/production.rb",
+    "doc/examples/config/deploy/staging.rb",
+    "doc/examples/config/staging-local-config.php",
     "lib/capistrano-wp.rb",
     "lib/capistrano/crowdfavorite/wordpress.rb",
     "lib/crowdfavorite.rb",
@@ -41,7 +46,7 @@ Gem::Specification.new do |s|
     "spec/support/capistrano.rb"
   ]
   s.homepage = "http://github.com/crowdfavorite/gem-capistrano-wp"
-  s.licenses = ["GPL"]
+  s.licenses = ["Apache License version 2"]
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.25"
   s.summary = "Crowd Favorite WordPress Capistrano recipes"

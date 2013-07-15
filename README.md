@@ -11,30 +11,24 @@ also deploy multisite environments with WP at the root).
 
 ## Usage
 
-This is a very early release, and the usage is not extremely well documented.  A minimal Capfile might look like this:
+See `doc/examples` for an example Capfile and capistrano config directory.
 
-	require 'rubygems'
-	require 'railsless-deploy'
-	require 'crowdfavorite/wordpress'
-	# tags/3.4.1, branches/3.4, trunk
-	set :wordpress_version, "branches/3.4"
-	set :application, "wp.example.com"
-	set :scm, :git
-	set :repository, "git@github.com:example/wordpress-site.git"
-	set :git_enable_submodules, 1
-	set :user, 'wpdeploy'
-	server 'web.example.com', :app, :web, :primary => true
-	# Deploy to /var/www/domains/wp.example.com/htdocs
-	# Link uploads, blogs.dir, cache from /var/www/domains/wp.example.com/shared 
-	# to /var/www/domains/wp.example.com/htdocs/wp-content
-	# Install WordPress into /var/www/domains/wp.example.com/htdocs/wp
-	set :base_dir, '/var/www/domains'
-	set :deploy_to, File.join(base_dir, application)
-	set :current_dir, 'htdocs'
-	set(:wp_path) { File.join(release_path, 'wp') }
-	set :deploy_via, :remote_cache
+General Capistrano usage:
 
-Also see the `:wp_symlinks` and `:wp_configs` settings in the source.
+1. Create a user for deploying your WordPress install
+2. Create an SSH key for the deploy user, and make sure you can SSH to it from your local machine
+3. [Install RubyGems][rubygems].  Crowd Favorite prefers to use [RVM][rvm] to maintain ruby versions, rubygems, and self-contained sets of gems.
+4. Install the capistrano-wp gem (which will install Capistrano and friends): `gem install capistrano-wp`
+5. Ensure that your project is in a repository starting at the web root
+6. Copy the example configuration (from doc/examples) into the root of your repository, and customize as appropriate
+7. Make sure your `:deploy_to` path exists and is owned by the deploy user
+8. Run `cap deploy:setup` to set up the initial directories
+9. Run `cap deploy` to push out a new version of your code
+10. Update your web server configuration to point to the current-release directory (in the `:deply_to` directory, named `httpdocs` by default)
+11. Relax and enjoy painless deployment
+
+[rubygems]: http://rubygems.org/pages/download
+[rvm]: https://rvm.io/
 
 ## Development
 
