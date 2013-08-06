@@ -13,7 +13,7 @@
 # limitations under the License.
 
 require 'crowdfavorite/tasks'
-require 'Shellwords'
+require 'shellwords'
 
 module CrowdFavorite::Tasks::WordPress
   extend CrowdFavorite::Support::Namespace
