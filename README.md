@@ -28,10 +28,25 @@ General Capistrano usage:
 10. Update your web server configuration to point to the current-release directory (in the `:deply_to` directory, named `httpdocs` by default)
 11. Relax and enjoy painless deployment
 
-[rubygems]: http://rubygems.org/pages/download
-[rvm]: https://rvm.io/
+## Capistrano Multi-stage
+
+This deployment strategy comes with multi-stage support baked in.
+
+For documentation regarding this portion of functionality, see the
+[Capistrano Multistage Documentation](https://github.com/capistrano/capistrano/wiki/2.x-Multistage-Extension).
+
+## Capistrano-WP Specific Features
+
+### Persistent file/directory symlinks
+
+### Persistent Configs
+
+### Detecting Local Changes
 
 ## Development
+
+[rubygems]: http://rubygems.org/pages/download
+[rvm]: https://rvm.io/
 
 	gem install bundle
 	bundle install
