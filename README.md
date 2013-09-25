@@ -37,6 +37,8 @@ For documentation regarding this portion of functionality, see the
 
 ## Capistrano-WP Specific Features
 
+### Handling of WordPress
+
 ### Persistent file/directory symlinks
 
 ### Persistent Configs
