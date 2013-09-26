@@ -11,7 +11,9 @@ also deploy multisite environments with WP at the root).
 
 ## Usage
 
-See `doc/examples` for an example Capfile and capistrano config directory.
+This is a plugin for the Capistrano deployment tool.  If you are unfamiliar
+with Capistrano, we would suggest at least familiarizing yoruself with
+the general concepts outlined in the [Capistrano Wiki](https://github.com/capistrano/capistrano/wiki).
 
 General Capistrano usage:
 
