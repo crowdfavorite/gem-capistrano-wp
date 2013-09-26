@@ -33,10 +33,9 @@ elsif ARGV.length > 1
 end
 
 def template_dir()
-  t = ["#{File.dirname(File.expand_path($0))}/../lib/capistrano/templates",
-       "#{Gem.dir}/gems/capistrano-wp-0.4.1/lib/capistrano/templates"]
-  t.each {|i| return i if File.directory?(i) and File.readable?(i) }
-  raise "both paths are invalid: #{t}"
+  t = "#{File.dirname(File.expand_path(__FILE__))}/../lib/capistrano/templates"
+  raise "Path invalid: #{t}" if not File.readable? t
+  return t
 end
 
 base = ARGV.shift
