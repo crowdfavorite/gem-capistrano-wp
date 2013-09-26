@@ -15,20 +15,28 @@ This is a plugin for the Capistrano deployment tool.  If you are unfamiliar
 with Capistrano, we would suggest at least familiarizing yoruself with
 the general concepts outlined in the [Capistrano Wiki](https://github.com/capistrano/capistrano/wiki).
 
-General Capistrano usage:
+### Assuptions (Requirements)
+
+  - Your code repository is your webroot
+
+### Install / Setup
+
+    gem install capistrano-wp
+    cd /path/to/repository
+    capify-wp .
+
+### Abridged General Capistrano Usage
 
 1. Create a user for deploying your WordPress install
 2. Create an SSH key for the deploy user, and make sure you can SSH to it from your local machine
 3. [Install RubyGems][rubygems].  Crowd Favorite prefers to use [RVM][rvm] to maintain ruby versions, rubygems, and self-contained sets of gems.
 4. Install the capistrano-wp gem (which will install Capistrano and friends): `gem install capistrano-wp`
-5. Ensure that your project is in a repository starting at the web root
-6. Navigate to the root of your and run `capify-wp .`, this will create the neccessary configuration files.
-7. Review create config files and adjust to your project specifics
-7. Make sure your `:deploy_to` path exists and is owned by the deploy user
-8. Run `cap deploy:setup` to set up the initial directories
-9. Run `cap deploy` to push out a new version of your code
-10. Update your web server configuration to point to the current-release directory (in the `:deply_to` directory, named `httpdocs` by default)
-11. Relax and enjoy painless deployment
+5. Follow **Install / Setup** steps above
+6. Make sure your `:deploy_to` path exists and is owned by the deploy user
+7. Run `cap deploy:setup` to set up the initial directories
+8. Run `cap deploy` to push out a new version of your code
+9. Update your web server configuration to point to the current-release directory (in the `:deply_to` directory, named `httpdocs` by default)
+10. Relax and enjoy painless deployment
 
 ## Capistrano Multi-stage
 
