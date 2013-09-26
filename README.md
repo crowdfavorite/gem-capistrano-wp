@@ -186,6 +186,18 @@ This excludes the listed files from making it into a release
 
 **For this you actually need to re-declare the set to add / remove these exclusions.**
 
+For example, to allow the `.git` directory to exist in the releases, you would
+re-declare the option completely.  Removing the `.git` entry.
+
+```ruby
+set :copy_exclude, [
+  "Capfile",
+  "/config",
+  "capinfo.json",
+  ".DS_Store",
+]
+```
+
 This is usually placed in `config/deploy.rb` but can also be placed at the stage level.
 
 ### Detecting Local Changes
