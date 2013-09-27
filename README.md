@@ -20,7 +20,8 @@ General Capistrano usage:
 3. [Install RubyGems][rubygems].  Crowd Favorite prefers to use [RVM][rvm] to maintain ruby versions, rubygems, and self-contained sets of gems.
 4. Install the capistrano-wp gem (which will install Capistrano and friends): `gem install capistrano-wp`
 5. Ensure that your project is in a repository starting at the web root
-6. Copy the example configuration (from doc/examples) into the root of your repository, and customize as appropriate
+6. Navigate to the root of your and run `capify-wp .`, this will create the neccessary configuration files.
+7. Review create config files and adjust to your project specifics
 7. Make sure your `:deploy_to` path exists and is owned by the deploy user
 8. Run `cap deploy:setup` to set up the initial directories
 9. Run `cap deploy` to push out a new version of your code
