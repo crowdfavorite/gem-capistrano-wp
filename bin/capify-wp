@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'fileutils'
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [path]"
+
+  opts.on("-h", "--help", "Displays this help info") do
+    puts opts
+    exit 0
+  end
+
+  begin
+    opts.parse!(ARGV)
+  rescue OptionParser::ParseError => e
+    warn e.message
+    puts opts
+    exit 1
+  end
+end
+
+if ARGV.empty?
+  abort "Please specify the directory to capify, e.g. `#{File.basename($0)} .'"
+elsif !File.exists?(ARGV.first)
+  abort "`#{ARGV.first}' does not exist."
+elsif !File.directory?(ARGV.first)
+  abort "`#{ARGV.first}' is not a directory."
+elsif !File.writable?(ARGV.first)
+  abort "`#{ARGV.first}' is not writable by you."
+elsif ARGV.length > 1
+  abort "Too many arguments; please specify only the directory to capify-wp."
+end
+
+def template_dir()
+  t = ["#{File.dirname(File.expand_path(__FILE__))}/../lib/capistrano/templates",
+       "#{Gem::Specification.find_by_name("capistrano-wp")}/lib/capisrano/templates"]
+  t.each { |dir| return dir if File.readable? dir }
+  raise "Paths invalid: #{t}" if not File.readable? t
+end
+
+base = ARGV.shift
+templates = template_dir()
+
+Dir.glob("#{templates}/**/*").each do |file|
+  target = file.gsub(templates, "")
+  next if target.empty?
+
+  target = File.join(base, target)
+
+  if File.exists? target
+    warn "[skip] '#{target}' already exists"
+  elsif File.exists? target.downcase
+    warn "[skip] '#{target.downcase}' exists, which could conflict with `#{target}'"
+  else
+    if File.directory? file
+      puts "[add] making directory '#{target}'"
+      FileUtils.mkdir_p(target)
+    else
+      puts "[add] writing '#{target}'"
+      FileUtils.cp file, target
+    end
+  end
+end
+
+puts "[done] capify-wped!"

@@ -5,12 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = "capistrano-wp"
-  s.version = "0.4.2"
+  s.version = "0.4.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Crowd Favorite"]
-  s.date = "2013-07-15"
+  s.date = "2013-09-25"
   s.description = "Recipes for deploying and maintaining remote WordPress installations with\nCapistrano.  Pulls in WordPress from SVN, optionally using a local or\nremote cache, and supports a number of common operations and tasks towards\nthe care and feeding of sites that may not be 100% maintained through\nversion control.\n"
+  s.executables = ["capify-wp"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -23,6 +24,7 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
+    "bin/capify-wp",
     "capistrano-wp.gemspec",
     "doc/examples/Capfile",
     "doc/examples/config/deploy.rb",
@@ -31,6 +33,9 @@ Gem::Specification.new do |s|
     "doc/examples/config/staging-local-config.php",
     "lib/capistrano-wp.rb",
     "lib/capistrano/crowdfavorite/wordpress.rb",
+    "lib/capistrano/templates/Capfile",
+    "lib/capistrano/templates/config/deploy.rb",
+    "lib/capistrano/templates/config/deploy/production.rb",
     "lib/crowdfavorite.rb",
     "lib/crowdfavorite/support/capistrano_extensions.rb",
     "lib/crowdfavorite/support/namespace.rb",
