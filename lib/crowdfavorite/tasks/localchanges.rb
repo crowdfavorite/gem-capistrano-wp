@@ -40,7 +40,14 @@ module CrowdFavorite::Tasks::LocalChanges
     _cset(:hash_suffix) { "_hash" }
     _cset(:hash_compare_suffix) { "compare" }
     _cset(:hashes) { capture("ls -xt #{File.join(hash_directory, '*' + hash_suffix)}").split.reverse }
-
+    _cset(:localchanges_excludes) {
+      {
+        :deleted => [],
+        :created => [],
+        :changed => [],
+        :any => []
+      }
+    }
 
     def _snapshot_exists(path)
         retcode = (capture("test -f " + Shellwords::escape(path) + "; echo $?").to_s.strip.to_i)
@@ -145,11 +152,30 @@ module CrowdFavorite::Tasks::LocalChanges
             end
           end
         end
+        excludes = fetch(:localchanges_excludes)
+        excludes[:any] ||= []
+        logger.important "Excluding from #{current_release}: #{excludes.inspect}"
+        excluded = {:left => {}, :right => {}, :changed => {}}
+        found_exclusion = false
+        [[left, :deleted], [right, :created], [changed, :changed]].each do |filegroup, excluder|
+          excludes[excluder] ||= []
+          filegroup.each do |filename, servers|
+            if excludes[excluder].detect {|f| f == filename or File.join(current_release, f) == filename} or
+              excludes[:any].detect {|f| f == filename or File.join(current_release, f) == filename}
+              found_exclusion = true
+              excluded[excluder] ||= {}
+              excluded[excluder][filename] ||= []
+              excluded[excluder][filename].push(*servers)
+              excluded[excluder][filename].uniq!
+              filegroup.delete(filename)
+            end
+          end
+        end
 
         unset(:snapshot_target)
         unset(:snapshot_hash_path)
         unset(:snapshot_force)
-        return {:left => left, :right => right, :changed => changed}
+        return {:left => left, :right => right, :changed => changed, :excluded => excluded}
       end
 
       def _do_snapshot_diff(results, format = :full)
@@ -157,13 +183,28 @@ module CrowdFavorite::Tasks::LocalChanges
           return false
         end
         if results[:left].empty? && results[:right].empty? && results[:changed].empty?
+          if results.has_key?(:excluded)
+            logger.important "excluded: " + results[:excluded].inspect
+          end
           return false
         end
 
         if format == :basic || !(fetch(:strategy).class <= Capistrano::Deploy::Strategy.new(:remote).class)
-          logger.important "deleted: " + results[:left].inspect
-          logger.important "created: " + results[:right].inspect
-          logger.important "changed: " + results[:changed].inspect
+          [[:left, 'deleted'], [:right, 'created'], [:changed, 'changed']].each do |resultgroup, verb|
+            if !results[resultgroup].empty?
+              logger.important "#{verb}: "
+              results[resultgroup].each do |filename, servers|
+                if filename.start_with? current_release
+                  filename = filename.slice!(current_release.length..-1)
+                end
+                logger.important "#{File.basename filename} in #{File.dirname filename} (on #{servers.inspect})"
+              end
+            end
+          end
+
+          if results.has_key?(:excluded)
+            logger.info "excluded: " + results[:excluded].inspect
+          end
           return true
         end
 
@@ -174,41 +215,10 @@ module CrowdFavorite::Tasks::LocalChanges
         logger.important "deleted: " + results[:left].inspect
         logger.important "created: " + results[:right].inspect
         logger.important "changed: " + results[:changed].inspect
-        return true
-
-        todostuff = <<-'EOTODO'
-        File.join(shared_path, configuration[:repository_cache] || "cached-copy")
-        if fetch(:scm) == :git
-          if fetch(:copy_exclude, []).include?(".git")
-            run("echo 'gitdir: #{}
-
+        if results.has_key?[:excluded]
+          logger.important "excluded: " + results[:excluded].inspect
         end
-
-
-        run("diff " + default_hash_path + " " + snapshot_hash_path + " || true") do |channel, stream, data|
-          data.each_line do |line|
-            line.strip!
-            if line.match(/^\s*[<>]/)
-              parts = line.split(/\s+/)
-              if hash_creation.match(/ls -ld/)
-                # > -rw-rw-r-- 1 example example 41 Sep 19 14:58 index.php
-                parts.slice!(0, 9)
-              else
-                # < 198ed94e9f1e5c69e159e8ba6d4420bb9c039715  index.php
-                parts.slice!(0,2)
-              end
-
-              bucket = line.match(/^\s*</) ? left : right
-              filename = parts.join('')
-
-              bucket[filename] ||= []
-              bucket[filename].push(channel[:host])
-            end
-          end
-        end
-        logger.important "oh hey, fully featured"
         return true
-        EOTODO
       end
 
       desc "Check the current release for changes made on the server; abort if changes are detected."
