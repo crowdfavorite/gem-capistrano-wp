@@ -239,6 +239,24 @@ or your stage specific files.
 set :snapshot_allow_differences, true
 ```
 
+If you would like to ignore changes to specific files, you can declare an option:
+
+```ruby
+set :localchanges_excludes, {
+  :deleted => ['deleted_file_to_ignore'],
+  :created => ['subdirectory/createdfile'],
+  :changed => ['changedfile'],
+  :any => ['ignoredfile']
+}
+```
+
+Filenames are relative to the webroot, and are exact; there is no current provision
+for globbing or directory tree exclusion.  The `:any` list will ignore all changes
+to a given file - deletion, creation, or content changes - while the other lists
+may be useful for more limited exclusions - for instance, a file that can be deleted
+but should never be changed if it remains present.
+
+
 ## Development
 
 [rubygems]: http://rubygems.org/pages/download
