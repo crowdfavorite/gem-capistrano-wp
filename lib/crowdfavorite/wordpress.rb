@@ -21,6 +21,7 @@ module CrowdFavorite::WordPress
   extend CrowdFavorite::Support::Namespace
   namespace :cf do
     after "deploy:finalize_update", "cf:localchanges:snapshot_deploy"
+    after "deploy:cleanup", "cf:localchanges:cleanup"
     before "deploy", "cf:localchanges:compare"
   end
 end
