@@ -243,7 +243,7 @@ module CrowdFavorite::Tasks::LocalChanges
         else
           logger.info "keeping #{count} of #{hashes.length} release hashes"
           hashpaths = (hashes - hashes.last(count)).map{ |thehash|
-            File.join(hash_directory, thehash) + " " + File.join(hash_directory, thehash + hash_compare_suffix)
+            File.join(thehash) + " " + File.join(thehash + hash_compare_suffix)
           }.join(" ")
           try_sudo "rm -f #{hashpaths}"
         end
