@@ -193,9 +193,10 @@ module CrowdFavorite::Tasks::LocalChanges
           [[:left, 'deleted'], [:right, 'created'], [:changed, 'changed']].each do |resultgroup, verb|
             if !results[resultgroup].empty?
               logger.important "#{verb}: "
-              results[resultgroup].each do |filename, servers|
+              results[resultgroup].each do |thefile, servers|
+                filename = thefile
                 if filename.start_with? current_release
-                  filename = filename.slice!(current_release.length..-1)
+                  filename = thefile.slice(current_release.length..-1)
                 end
                 logger.important "#{File.basename filename} in #{File.dirname filename} (on #{servers.inspect})"
               end
