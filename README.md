@@ -9,6 +9,11 @@ WP-Stack expects WordPress Core to be included in the project as a git
 submodule; these recipes pull WordPress in from SVN (and can therefore
 also deploy multisite environments with WP at the root).
 
+**This is a Capistrano 2.X plugin, not for use with capistrano 3**
+
+**[Contribute to the (possible) migration to Cap 3](https://github.com/crowdfavorite/gem-capistrano-wp/issues/6)**
+
+
 ## Usage
 
 This is a plugin for the Capistrano deployment tool.  If you are unfamiliar
