@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "capistrano-wp"
-  s.version = "0.4.4"
+  s.version = "0.4.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Crowd Favorite"]
-  s.date = "2013-11-11"
+  s.date = "2013-11-12"
   s.description = "Recipes for deploying and maintaining remote WordPress installations with\nCapistrano.  Pulls in WordPress from SVN, optionally using a local or\nremote cache, and supports a number of common operations and tasks towards\nthe care and feeding of sites that may not be 100% maintained through\nversion control.\n"
   s.executables = ["capify-wp"]
   s.extra_rdoc_files = [
