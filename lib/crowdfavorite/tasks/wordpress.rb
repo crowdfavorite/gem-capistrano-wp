@@ -167,7 +167,10 @@ module CrowdFavorite::Tasks::WordPress
               [internal] Installs WordPress to the application deploy point
         DESC
         task :default, :except => { :no_release => true } do
-          if fetch(:strategy).class <= Capistrano::Deploy::Strategy.new(:remote).class
+          wp = fetch(:wordpress_version, false)
+          if wp.nil? or wp == false or wp.empty?
+            logger.info "Not installing WordPress"
+          elsif fetch(:strategy).class <= Capistrano::Deploy::Strategy.new(:remote).class
             with_remote_cache
           else
             with_copy

@@ -58,14 +58,14 @@ This gem handles WordPress via SVN directly from WordPress.org.
 
 In your main `config/deploy.rb` file you will see how to decalare what
 version of WordPress you wish to use by defining an SVN location
-like `branches/3.6`, `tags/3.6.1` or even `trunk`
+like `branches/3.6`, `tags/3.6.1` or even `trunk`:
 
 ```ruby
 set :wordpress_version, "branches/3.5"
 ```
 
 It then places WordPress where you declare it to live within the stage
-specific configuration files, for example `config/deploy/production.rb`
+specific configuration files, for example `config/deploy/production.rb`:
 
 ```ruby
 set(:wp_path) { File.join(release_path, "wp") }
@@ -74,9 +74,17 @@ set(:wp_path) { File.join(release_path, "wp") }
 This places WordPress in a directory called "wp" within your webroot.
 
 It also gracefully handles the situation where both your code repository
-and WordPress live at the webroot
+and WordPress live at the webroot.
 
-This process enables you to not have to track WordPress within your code repository.
+This process enables you to not have to track WordPress within your code
+repository.
+
+If for some reason you want to avoid installing WordPress, omit or set to
+false the `:wordpress_version` option:
+
+```ruby
+set :wordpress_version, false
+```
 
 ### Persistent file/directory symlinks
 
