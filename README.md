@@ -269,6 +269,16 @@ to a given file - deletion, creation, or content changes - while the other lists
 may be useful for more limited exclusions - for instance, a file that can be deleted
 but should never be changed if it remains present.
 
+### Enhanced :git capistrano scm module
+
+capistrano-wp includes a slight enhancement to the `:git` scm
+module.  The one shipped with Capistrano 2 does not gracefully
+handle submodules being removed in the repo; they stick around in
+the cached copy.
+
+The enhancement gives an extra -f to `git clean` to induce it to remove
+the submodule detritus, and also runs the clean in every submodule
+(with `git submodule foreach`).
 
 ## Development
 

@@ -16,6 +16,7 @@
 
 require 'crowdfavorite/tasks/wordpress'
 require 'crowdfavorite/tasks/localchanges'
+require 'capistrano/recipes/deploy/scm/git-enhanced'
 
 module CrowdFavorite::WordPress
   extend CrowdFavorite::Support::Namespace
