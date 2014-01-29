@@ -17,7 +17,7 @@ also deploy multisite environments with WP at the root).
 ## Usage
 
 This is a plugin for the Capistrano deployment tool.  If you are unfamiliar
-with Capistrano, we would suggest at least familiarizing yoruself with
+with Capistrano, we would suggest at least familiarizing yourself with
 the general concepts outlined in the [Capistrano Wiki](https://github.com/capistrano/capistrano/wiki).
 
 ### Assumptions (Requirements)
@@ -56,7 +56,7 @@ For documentation regarding this portion of functionality, see the
 
 This gem handles WordPress via SVN directly from WordPress.org.
 
-In your main `config/deploy.rb` file you will see how to decalare what
+In your main `config/deploy.rb` file you will see how to declare what
 version of WordPress you wish to use by defining an SVN location
 like `branches/3.6`, `tags/3.6.1` or even `trunk`:
 
@@ -89,7 +89,7 @@ set :wordpress_version, false
 ### Persistent file/directory symlinks
 
 This gem augments the way capistrano handles directories you need to "persist"
-between releases.  Providing a declaritive interface for these items.
+between releases.  Providing a declarative interface for these items.
 
 There are some common directories that WordPress needs to act this way.  By
 default, if the following directories exist in the "shared" directory, they
@@ -155,7 +155,7 @@ set :wp_configs, [{
 You can follow the same steps as the symlinks for modification or addition
 to the default config copying rules.
 
-### Stage specfiic overrides
+### Stage specific overrides
 
 Stage specific overrides allow you to target specific configuration
 files to their respective stage.
@@ -176,7 +176,7 @@ This will place the proper `production-htaccess` file in the root of
 your next release, overriding any existing file of the same name.
 
 By default, it looks for the common `.htaccess` situation
-along withh `local-config.php`
+along with `local-config.php`
 
 ```ruby
 set :stage_specific_overrides, {
@@ -229,7 +229,7 @@ This gem by default checks the current release for modifications since
 it was deployed.  Either you're dealing with clients that like to make
 changes in production, or you have plugins that write configs and other
 things to the file system.  This step protects you against moving changes
-that have happend in the target stage out of use.
+that have happened in the target stage out of use.
 
 When deploying, if it detects a change it will stop the deploy process, and
 provide you with a listing of all the files that have been either added,
@@ -269,6 +269,16 @@ to a given file - deletion, creation, or content changes - while the other lists
 may be useful for more limited exclusions - for instance, a file that can be deleted
 but should never be changed if it remains present.
 
+### Enhanced :git capistrano scm module
+
+capistrano-wp includes a slight enhancement to the `:git` scm
+module.  The one shipped with Capistrano 2 does not gracefully
+handle submodules being removed in the repo; they stick around in
+the cached copy.
+
+The enhancement gives an extra -f to `git clean` to induce it to remove
+the submodule detritus, and also runs the clean in every submodule
+(with `git submodule foreach`).
 
 ## Development
 
