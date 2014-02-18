@@ -20,10 +20,12 @@ module Capistrano
           # time. This could cause wierd-ness in the remote cache if the url
           # changes between calls, but as long as the repositories are all
           # based from each other it should still work fine.
-          if remote != 'origin'
-            execute << "#{git} config remote.#{remote}.url #{variable(:repository)}"
-            execute << "#{git} config remote.#{remote}.fetch +refs/heads/*:refs/remotes/#{remote}/*"
-          end
+          #
+          # Since it's even worse to have the URL be out of date
+          # than it is to set it too many times, set it every time
+          # even for origin.
+          execute << "#{git} config remote.#{remote}.url #{variable(:repository)}"
+          execute << "#{git} config remote.#{remote}.fetch +refs/heads/*:refs/remotes/#{remote}/*"
 
           # since we're in a local branch already, just reset to specified revision rather than merge
           execute << "#{git} fetch #{verbose} #{remote} && #{git} fetch --tags #{verbose} #{remote} && #{git} reset #{verbose} --hard #{revision}"
