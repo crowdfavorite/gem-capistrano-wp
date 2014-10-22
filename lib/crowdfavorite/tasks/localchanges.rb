@@ -110,48 +110,57 @@ module CrowdFavorite::Tasks::LocalChanges
         set(:snapshot_force, true)
         snapshot
 
-        # Hand-tooled diff-parsing - handles either shasum-style or ls -ld output
-        # Hashes store filename => [host, host, host]
+        # Hand-tooled file diffs - handles either shasum-style or ls -ld output
+        # Hashes store filename => {host => hash, host => hash, host => hash}
         left = {}
         right = {}
         changed = {}
-        run("diff " + default_hash_path + " " + snapshot_hash_path + " || true") do |channel, stream, data|
-          data.each_line do |line|
-            line.strip!
-            if line.match(/^\s*[<>]/)
-              parts = line.split(/\s+/)
-              if hash_creation.match(/ls -ld/)
-                # > -rw-rw-r-- 1 example example 41 Sep 19 14:58 index.php
-                parts.slice!(0, 9)
-              else
-                # < 198ed94e9f1e5c69e159e8ba6d4420bb9c039715  index.php
-                parts.slice!(0,2)
+
+        [default_hash_path, snapshot_hash_path].each do |hashpath|
+          Dir.mktmpdir do |hashdownload|
+            download(hashpath, File.join(hashdownload, "$CAPISTRANO:HOST$"))
+            Dir.foreach(hashdownload) do |servername|
+              if not File.directory?(File.join(hashdownload, servername)) then
+                File.open(File.join(hashdownload, servername)) do |serverfile|
+                  serverfile.each_line do |line|
+                    line.strip!
+                    parts = line.split(/\s+/)
+                    if hash_creation.match(/ls -ld/)
+                      # -rw-rw-r-- 1 example example 41 Sep 19 14:58 index.php
+                      hash_result = parts.slice!(0, 8)
+                    else
+                      # 198ed94e9f1e5c69e159e8ba6d4420bb9c039715  index.php
+                      hash_result = parts.slice!(0, 1)
+                    end
+
+                    bucket = (hashpath == default_hash_path) ? left : right
+                    filename = parts.join('')
+                    bucket[filename] ||= {}
+                    bucket[filename][servername] = hash_result
+                  end
+                end
               end
-
-              bucket = line.match(/^\s*</) ? left : right
-              filename = parts.join('')
-
-              bucket[filename] ||= []
-              bucket[filename].push(channel[:host])
             end
           end
         end
+
         if !(left.empty? && right.empty?)
           left.each do |filename, servers|
             if right.has_key?(filename)
-              servers.each do |host|
-                if right[filename].delete(host)
-                  changed[filename] ||= []
-                  changed[filename].push(host)
-                  left[filename].delete(host)
+              servers.each do |host, hash_result|
+                right_hash_result = right[filename].delete(host)
+                if right_hash_result and right_hash_result != hash_result
+                  changed[filename] ||= {}
+                  changed[filename][host] = true
                 end
+                left[filename].delete(host)
               end
-
               left.delete(filename) if left[filename].empty?
               right.delete(filename) if right[filename].empty?
             end
           end
         end
+
         excludes = fetch(:localchanges_excludes)
         excludes[:any] ||= []
         logger.important "Excluding from #{current_release}: #{excludes.inspect}"
@@ -160,6 +169,9 @@ module CrowdFavorite::Tasks::LocalChanges
         [[left, :deleted], [right, :created], [changed, :changed]].each do |filegroup, excluder|
           excludes[excluder] ||= []
           filegroup.each do |filename, servers|
+            if servers.respond_to? :keys
+              servers = servers.keys
+            end
             if excludes[excluder].detect {|f| f == filename or File.join(current_release, f) == filename} or
               excludes[:any].detect {|f| f == filename or File.join(current_release, f) == filename}
               found_exclusion = true
@@ -198,7 +210,7 @@ module CrowdFavorite::Tasks::LocalChanges
                 if filename.start_with? current_release
                   filename = thefile.slice(current_release.length..-1)
                 end
-                logger.important "#{File.basename filename} in #{File.dirname filename} (on #{servers.inspect})"
+                logger.important "#{File.basename filename} in #{File.dirname filename} (on #{servers.keys.inspect})"
               end
             end
           end
@@ -216,7 +228,7 @@ module CrowdFavorite::Tasks::LocalChanges
         logger.important "deleted: " + results[:left].inspect
         logger.important "created: " + results[:right].inspect
         logger.important "changed: " + results[:changed].inspect
-        if results.has_key?[:excluded]
+        if results.has_key? :excluded
           logger.important "excluded: " + results[:excluded].inspect
         end
         return true
